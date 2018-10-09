@@ -201,7 +201,7 @@
       <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;shell&quot;]">
+  <body class="index" data-languages="[&quot;shell&quot;,&quot;go&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -212,12 +212,78 @@
       <img src="images/logo.png" class="logo" alt="Logo" />
         <div class="lang-selector">
               <a href="#" data-language-name="shell">shell</a>
+              <a href="#" data-language-name="go">go</a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
         </div>
         <ul class="search-results"></ul>
       <ul id="toc" class="toc-list-h1">
+          <li>
+            <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="#endpoints" class="toc-h1 toc-link" data-title="Endpoints">Endpoints</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#blocknumber" class="toc-h2 toc-link" data-title="BlockNumber"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=6293:6332#L235">BlockNumber</a></a>
+                  </li>
+                  <li>
+                    <a href="#call" class="toc-h2 toc-link" data-title="Call"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=18002:18081#L627">Call</a></a>
+                  </li>
+                  <li>
+                    <a href="#estimategas" class="toc-h2 toc-link" data-title="EstimateGas"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=21773:21833#L777">EstimateGas</a></a>
+                  </li>
+                  <li>
+                    <a href="#gasprice" class="toc-h2 toc-link" data-title="GasPrice"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=20639:20672#L747">GasPrice</a></a>
+                  </li>
+                  <li>
+                    <a href="#getbalance" class="toc-h2 toc-link" data-title="GetBalance"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=7363:7452#L280">GetBalance</a></a>
+                  </li>
+                  <li>
+                    <a href="#getblockbyhash" class="toc-h2 toc-link" data-title="GetBlockByHash"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=2318:2399#L65">GetBlockByHash</a></a>
+                  </li>
+                  <li>
+                    <a href="#getblockbynumber" class="toc-h2 toc-link" data-title="GetBlockByNumber"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=5406:5499#L192">GetBlockByNumber</a></a>
+                  </li>
+                  <li>
+                    <a href="#getblocktransactioncountbyhash" class="toc-h2 toc-link" data-title="GetBlockTransactionCountByHash"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=3334:3408#L111">GetBlockTransactionCountByHash</a></a>
+                  </li>
+                  <li>
+                    <a href="#getblocktransactioncountbynumber" class="toc-h2 toc-link" data-title="GetBlockTransactionCountByNumber"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=4345:4431#L153">GetBlockTransactionCountByNumber</a></a>
+                  </li>
+                  <li>
+                    <a href="#getcode" class="toc-h2 toc-link" data-title="GetCode"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=8801:8889#L338">GetCode</a></a>
+                  </li>
+                  <li>
+                    <a href="#gettransactionbyblockhashandindex" class="toc-h2 toc-link" data-title="GetTransactionByBlockHashAndIndex"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=15108:15214#L540">GetTransactionByBlockHashAndIndex</a></a>
+                  </li>
+                  <li>
+                    <a href="#gettransactionbyblocknumberandindex" class="toc-h2 toc-link" data-title="GetTransactionByBlockNumberAndIndex"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=16209:16324#L578">GetTransactionByBlockNumberAndIndex</a></a>
+                  </li>
+                  <li>
+                    <a href="#gettransactionbyhash" class="toc-h2 toc-link" data-title="GetTransactionByHash"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=6487:6559#L211">GetTransactionByHash</a></a>
+                  </li>
+                  <li>
+                    <a href="#gettransactioncount" class="toc-h2 toc-link" data-title="GetTransactionCount"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=10247:10348#L396">GetTransactionCount</a></a>
+                  </li>
+                  <li>
+                    <a href="#gettransactionreceipt" class="toc-h2 toc-link" data-title="GetTransactionReceipt"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=11549:11618#L396">GetTransactionReceipt</a></a>
+                  </li>
+                  <li>
+                    <a href="#rpcmarshalblock" class="toc-h2 toc-link" data-title="RPCMarshalBlock"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=11269:11360#L435">RPCMarshalBlock</a></a>
+                  </li>
+                  <li>
+                    <a href="#sendtransaction" class="toc-h2 toc-link" data-title="SendTransaction"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=2549:2611#L74">SendTransaction</a></a>
+                  </li>
+                  <li>
+                    <a href="#setswch" class="toc-h2 toc-link" data-title="SetSwCh"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=476:511#L23">SetSwCh</a></a>
+                  </li>
+                  <li>
+                    <a href="#typeconvert" class="toc-h2 toc-link" data-title="TypeConvert"><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=10877:10917#L418">TypeConvert</a></a>
+                  </li>
+              </ul>
+          </li>
       </ul>
         <ul class="toc-footer">
             <li><a href='http://www.codeaslaw.io/'>Justitia</a></li>
@@ -227,7 +293,12 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h2 id='blocknumber'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=6293:6332#L235">BlockNumber</a></h2><h4 id='eth_blocknumber'>eth_blockNumber</h4>
+        <h1 id='introduction'>Introduction</h1>
+<p>Justitia RPC is built using our own RPC library which contains its own set of documentation and tests.
+See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">https://github.com/DSiSc/apigateway/tree/master/rpc/lib</a></p>
+
+<p>Or resort to the rpc documentation at: <a href="https://dsisc.github.io/slate/">https://dsisc.github.io/slate/</a></p>
+<h1 id='endpoints'>Endpoints</h1><h2 id='blocknumber'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=6293:6332#L235">BlockNumber</a></h2><h4 id='eth_blocknumber'>eth_blockNumber</h4>
 <p>Returns the number of most recent block.</p>
 <h5 id='parameters'>Parameters</h5>
 <p>none</p>
@@ -738,6 +809,7 @@
       <div class="dark-box">
           <div class="lang-selector">
                 <a href="#" data-language-name="shell">shell</a>
+                <a href="#" data-language-name="go">go</a>
           </div>
       </div>
     </div>
