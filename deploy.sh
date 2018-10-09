@@ -66,7 +66,7 @@ parse_args() {
   default_email=${GIT_DEPLOY_EMAIL:-}
 
   #repository to deploy to. must be readable and writable.
-  repo=origin
+  repo=https://${GITHUB_API_TOKEN}@github.com/DSiSc/slate.git
 
   #append commit hash to the end of message by default
   append_hash=${GIT_DEPLOY_APPEND_HASH:-true}
@@ -213,3 +213,4 @@ else
   run_build
   main "$@"
 fi
+
