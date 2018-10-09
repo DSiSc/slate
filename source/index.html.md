@@ -6,7 +6,7 @@ language_tabs: # must be one of https://git.io/vQNgJ
   - go
 
 toc_footers:
-  - <a href='http://www.codeaslaw.io/'>Justitia</a>
+  - <a href='https://tendermint.com/'>Tendermint</a>
   - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
 
 search: true
@@ -14,681 +14,1350 @@ search: true
 
 # Introduction
 
-Justitia RPC is built using our own RPC library which contains its own set of documentation and tests.
-See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">https://github.com/DSiSc/apigateway/tree/master/rpc/lib</a>
+Tendermint supports the following RPC protocols:
 
-Or resort to the rpc documentation at: <a href="https://dsisc.github.io/slate/">https://dsisc.github.io/slate/</a>
+* URI over HTTP
+* JSONRPC over HTTP
+* JSONRPC over websockets
+
+Tendermint RPC is built using our own RPC library which contains its own set of documentation and tests.
+See it here: <a href="https://github.com/tendermint/tendermint/tree/master/rpc/lib">https://github.com/tendermint/tendermint/tree/master/rpc/lib</a>
+
+## Configuration
+
+Set the `laddr` config parameter under `[rpc]` table in the `$TMHOME/config/config.toml` file or the `--rpc.laddr` command-line flag to the desired protocol://host:port setting.  Default: `tcp://0.0.0.0:26657`.
+
+## Arguments
+
+Arguments which expect strings or byte arrays may be passed as quoted strings, like `"abc"` or as `0x`-prefixed strings, like `0x616263`.
+
+## URI/HTTP
+
+```bash
+curl 'localhost:26657/broadcast_tx_sync?tx="abc"'
+```
+
+> Response:
+
+```json
+{
+
+
+	"error": "",
+	"result": {
+		"hash": "2B8EC32BA2579B3B8606E42C06DE2F7AFA2556EF",
+		"log": "",
+		"data": "",
+		"code": 0
+	},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
+## JSONRPC/HTTP
+
+JSONRPC requests can be POST'd to the root RPC endpoint via HTTP (e.g. `<a href="http://localhost:26657/">http://localhost:26657/</a>`).
+
+```json
+{
+
+
+	"method": "broadcast_tx_sync",
+	"jsonrpc": "2.0",
+	"params": [ "abc" ],
+	"id": "dontcare"
+
+}
+```
+
+## JSONRPC/websockets
+
+JSONRPC requests can be made via websocket. The websocket endpoint is at `/websocket`, e.g. `localhost:26657/websocket`.  Asynchronous RPC functions like event `subscribe` and `unsubscribe` are only available via websockets.
+
+## More Examples
+
+See the various bash tests using curl in `test/`, and examples using the `Go` API in `rpc/client/`.
+
+## Get the list
+
+An HTTP Get request to the root RPC endpoint shows a list of available endpoints.
+
+```bash
+curl 'localhost:26657'
+```
+
+> Response:
+
+```plain
+Available endpoints:
+/abci_info
+/dump_consensus_state
+/genesis
+/net_info
+/num_unconfirmed_txs
+/status
+/health
+/unconfirmed_txs
+/unsafe_flush_mempool
+/unsafe_stop_cpu_profiler
+/validators
+
+Endpoints that require arguments:
+/abci_query?path=_&data=_&prove=_
+/block?height=_
+/blockchain?minHeight=_&maxHeight=_
+/broadcast_tx_async?tx=_
+/broadcast_tx_commit?tx=_
+/broadcast_tx_sync?tx=_
+/commit?height=_
+/dial_seeds?seeds=_
+/dial_persistent_peers?persistent_peers=_
+/subscribe?event=_
+/tx?hash=_&prove=_
+/unsafe_start_cpu_profiler?filename=_
+/unsafe_write_heap_profile?filename=_
+/unsubscribe?event=_
+```
 
 # Endpoints
 
 
 
 
-## [BlockNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=6293:6332#L235)
-#### eth_blockNumber
+## [ABCIInfo](https://github.com/tendermint/tendermint/tree/master/rpc/core/abci.go?s=2532:2579#L95)
+Get some info about the application.
 
-Returns the number of most recent block.
+```shell
+curl 'localhost:26657/abci_info'
+```
 
-##### Parameters
-none
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+info, err := client.ABCIInfo()
+```
 
-##### Returns
+> The above command returns JSON structured like this:
 
-`QUANTITY` - integer of the current block number the client is on.
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
-
-// Result
+```json
 {
 
 
-	"id":83,
-	"jsonrpc": "2.0",
-	"result": "0xc94" // 1207
+	"error": "",
+	"result": {
+		"response": {
+			"data": "{\"size\":3}"
+		}
+	},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
 ```
 
-***
+## [ABCIQuery](https://github.com/tendermint/tendermint/tree/master/rpc/core/abci.go?s=1609:1716#L52)
+Query the application for some information.
 
-## [Call](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=18002:18081#L627)
-#### eth_call
+```shell
+curl 'localhost:26657/abci_query?path=""&data="abcd"&trusted=false'
+```
 
-Executes a new message call immediately without creating a transaction on the block chain.
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+result, err := client.ABCIQuery("", "abcd", true)
+```
 
-##### Parameters
+> The above command returns JSON structured like this:
 
-1. `Object` - The transaction call object
-- `from`: `DATA`, 20 Bytes - (optional) The address the transaction is sent from.
-- `to`: `DATA`, 20 Bytes  - The address the transaction is directed to.
-- `gas`: `QUANTITY`  - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.
-- `gasPrice`: `QUANTITY`  - (optional) Integer of the gasPrice used for each paid gas
-- `value`: `QUANTITY`  - (optional) Integer of the value sent with this transaction
-- `data`: `DATA`  - (optional) Hash of the method signature and encoded parameters. For details see [Ethereum Contract ABI](<a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI</a>)
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`, see the [default block parameter](#the-default-block-parameter)
-
-##### Returns
-
-`DATA` - the return value of executed contract.
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_call","params":[{see above}],"id":1}'
-
-// Result
+```json
 {
 
 
-	"id":1,
-	"jsonrpc": "2.0",
-	"result": "0x"
+	"error": "",
+	"result": {
+		"response": {
+			"log": "exists",
+			"height": 0,
+			"proof": "010114FED0DAD959F36091AD761C922ABA3CBF1D8349990101020103011406AA2262E2F448242DF2C2607C3CDC705313EE3B0001149D16177BC71E445476174622EA559715C293740C",
+			"value": "61626364",
+			"key": "61626364",
+			"index": -1,
+			"code": 0
+		}
+	},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
 ```
 
-***
+### Query Parameters
 
-## [EstimateGas](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=21773:21833#L777)
-#### eth_estimateGas
+| Parameter | Type   | Default | Required | Description                                    |
+|-----------+--------+---------+----------+------------------------------------------------|
+| path      | string | false   | false    | Path to the data ("/a/b/c")                    |
+| data      | []byte | false   | true     | Data                                           |
+| height    | int64 | 0       | false    | Height (0 means latest)                        |
+| trusted   | bool   | false   | false    | Does not include a proof of the data inclusion |
 
-Generates and returns an estimate of how much gas is necessary to allow the transaction to complete. The transaction will not be added to the blockchain. Note that the estimate may be significantly more than the amount of gas actually used by the transaction, for a variety of reasons including EVM mechanics and node performance.
+## [Block](https://github.com/tendermint/tendermint/tree/master/rpc/core/blocks.go?s=6095:6152#L217)
+Get block at a given height.
+If no height is provided, it will fetch the latest block.
 
-##### Parameters
+```shell
+curl 'localhost:26657/block?height=10'
+```
 
-See [eth_call](#eth_call) parameters, expect that all properties are optional. If no gas limit is specified geth uses the block gas limit from the pending block as an upper bound. As a result the returned estimate might not be enough to executed the call/transaction when the amount of gas is higher than the pending block gas limit.
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+info, err := client.Block(10)
+```
 
-##### Returns
+> The above command returns JSON structured like this:
 
-`QUANTITY` - the amount of gas used.
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_estimateGas","params":[{see above}],"id":1}'
-
-// Result
+```json
 {
 
 
-	"id":1,
-	"jsonrpc": "2.0",
-	"result": "0x5208" // 21000
+	"error": "",
+	"result": {
+	  "block": {
+	    "last_commit": {
+	      "precommits": [
+	        {
+	          "signature": {
+	            "data": "12C0D8893B8A38224488DC1DE6270DF76BB1A5E9DB1C68577706A6A97C6EC34FFD12339183D5CA8BC2F46148773823DE905B7F6F5862FD564038BB7AE03BF50D",
+	            "type": "ed25519"
+	          },
+	          "block_id": {
+	            "parts": {
+	              "hash": "3C78F00658E06744A88F24FF97A0A5011139F34A",
+	              "total": 1
+	            },
+	            "hash": "F70588DAB36BDA5A953D548A16F7D48C6C2DFD78"
+	          },
+	          "type": 2,
+	          "round": 0,
+	          "height": 9,
+	          "validator_index": 0,
+	          "validator_address": "E89A51D60F68385E09E716D353373B11F8FACD62"
+	        }
+	      ],
+	      "blockID": {
+	        "parts": {
+	          "hash": "3C78F00658E06744A88F24FF97A0A5011139F34A",
+	          "total": 1
+	        },
+	        "hash": "F70588DAB36BDA5A953D548A16F7D48C6C2DFD78"
+	      }
+	    },
+	    "data": {
+	      "txs": []
+	    },
+	    "header": {
+	      "app_hash": "",
+	      "chain_id": "test-chain-6UTNIN",
+	      "height": 10,
+	      "time": "2017-05-29T15:05:53.877Z",
+	      "num_txs": 0,
+	      "last_block_id": {
+	        "parts": {
+	          "hash": "3C78F00658E06744A88F24FF97A0A5011139F34A",
+	          "total": 1
+	        },
+	        "hash": "F70588DAB36BDA5A953D548A16F7D48C6C2DFD78"
+	      },
+	      "last_commit_hash": "F31CC4282E50B3F2A58D763D233D76F26D26CABE",
+	      "data_hash": "",
+	      "validators_hash": "9365FC80F234C967BD233F5A3E2AB2F1E4B0E5AA"
+	    }
+	  },
+	  "block_meta": {
+	    "header": {
+	      "app_hash": "",
+	      "chain_id": "test-chain-6UTNIN",
+	      "height": 10,
+	      "time": "2017-05-29T15:05:53.877Z",
+	      "num_txs": 0,
+	      "last_block_id": {
+	        "parts": {
+	          "hash": "3C78F00658E06744A88F24FF97A0A5011139F34A",
+	          "total": 1
+	        },
+	        "hash": "F70588DAB36BDA5A953D548A16F7D48C6C2DFD78"
+	      },
+	      "last_commit_hash": "F31CC4282E50B3F2A58D763D233D76F26D26CABE",
+	      "data_hash": "",
+	      "validators_hash": "9365FC80F234C967BD233F5A3E2AB2F1E4B0E5AA"
+	    },
+	    "block_id": {
+	      "parts": {
+	        "hash": "277A4DBEF91483A18B85F2F5677ABF9694DFA40F",
+	        "total": 1
+	      },
+	      "hash": "96B1D2F2D201BA4BC383EB8224139DB1294944E5"
+	    }
+	  }
+	},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
 ```
 
-***
+## [BlockResults](https://github.com/tendermint/tendermint/tree/master/rpc/core/blocks.go?s=9822:9893#L353)
+BlockResults gets ABCIResults at a given height.
+If no height is provided, it will fetch results for the latest block.
 
-## [GasPrice](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=20639:20672#L747)
-#### eth_gasPrice
+Results are for the height of the block containing the txs.
+Thus response.results[5] is the results of executing getBlock(h).Txs[5]
 
-Returns the current price per gas in wei.
+```shell
+curl 'localhost:26657/block_results?height=10'
+```
 
-##### Parameters
-none
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+info, err := client.BlockResults(10)
+```
 
-##### Returns
+> The above command returns JSON structured like this:
 
-`QUANTITY` - integer of the current gas price in wei.
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_gasPrice","params":[],"id":73}'
-
-// Result
+```json
 {
 
 
-	"id":73,
-	"jsonrpc": "2.0",
-	"result": "0x09184e72a000" // 10000000000000
+	"height": 10,
+	"results": [
+	 {
+	  "code": 0,
+	  "data": "CAFE00F00D"
+	 },
+	 {
+	  "code": 102,
+	  "data": ""
+	 }
+	]
 
 }
 ```
 
-***
+## [BlockchainInfo](https://github.com/tendermint/tendermint/tree/master/rpc/core/blocks.go?s=1634:1719#L66)
+Get block headers for minHeight <= height <= maxHeight.
+Block headers are returned in descending order (highest first).
 
-## [GetBalance](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=7363:7452#L280)
-#### eth_getBalance
-
-Returns the balance of the account of given address.
-
-##### Parameters
-
-1. `DATA`, 20 Bytes - address to check for balance.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`, see the [default block parameter](#the-default-block-parameter)
-
-```js
-params: [
-
-
-	'0xc94770007dda54cF92009BFF0dE90c06F603a09f',
-	'latest'
-
-]
+```shell
+curl 'localhost:26657/blockchain?minHeight=10&maxHeight=10'
 ```
 
-##### Returns
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+info, err := client.BlockchainInfo(10, 10)
+```
 
-`QUANTITY` - integer of the current balance in wei.
+> The above command returns JSON structured like this:
 
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0xc94770007dda54cF92009BFF0dE90c06F603a09f", "latest"],"id":1}'
-
-// Result
+```json
 {
 
 
-	"id":1,
-	"jsonrpc": "2.0",
-	"result": "0x0234c8a3397aab58" // 158972490234375000
+	"error": "",
+	"result": {
+		"block_metas": [
+			{
+				"header": {
+					"app_hash": "",
+					"chain_id": "test-chain-6UTNIN",
+					"height": 10,
+					"time": "2017-05-29T15:05:53.877Z",
+					"num_txs": 0,
+					"last_block_id": {
+						"parts": {
+							"hash": "3C78F00658E06744A88F24FF97A0A5011139F34A",
+							"total": 1
+						},
+						"hash": "F70588DAB36BDA5A953D548A16F7D48C6C2DFD78"
+					},
+					"last_commit_hash": "F31CC4282E50B3F2A58D763D233D76F26D26CABE",
+					"data_hash": "",
+					"validators_hash": "9365FC80F234C967BD233F5A3E2AB2F1E4B0E5AA"
+				},
+				"block_id": {
+					"parts": {
+						"hash": "277A4DBEF91483A18B85F2F5677ABF9694DFA40F",
+						"total": 1
+					},
+					"hash": "96B1D2F2D201BA4BC383EB8224139DB1294944E5"
+				}
+			}
+		],
+		"last_height": 5493
+	},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
 ```
 
-***
+<aside class="notice">Returns at most 20 items.</aside>
 
-## [GetBlockByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=2318:2399#L65)
-#### eth_getBlockByHash
+## [BroadcastTxAsync](https://github.com/tendermint/tendermint/tree/master/rpc/core/mempool.go?s=1197:1266#L51)
+Returns right away, with no response
 
-Returns information about a block by hash.
-
-##### Parameters
-
-1. `DATA`, 32 Bytes - Hash of a block.
-2. `Boolean` - If `true` it returns the full transaction objects, if `false` only the hashes of the transactions.
-
-```js
-params: [
-
-
-	'0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331',
-	true
-
-]
+```shell
+curl 'localhost:26657/broadcast_tx_async?tx="123"'
 ```
 
-##### Returns
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+result, err := client.BroadcastTxAsync("123")
+```
 
-`Object` - A block object, or `null` when no block was found:
+> The above command returns JSON structured like this:
 
-- `number`: `QUANTITY` - the block number. `null` when its pending block.
-- `hash`: `DATA`, 32 Bytes - hash of the block. `null` when its pending block.
-- `parentHash`: `DATA`, 32 Bytes - hash of the parent block.
-- `transactionsRoot`: `DATA`, 32 Bytes - the root of the transaction trie of the block.
-- `stateRoot`: `DATA`, 32 Bytes - the root of the final state trie of the block.
-- `receiptsRoot`: `DATA`, 32 Bytes - the root of the receipts trie of the block.
-- `miner`: `DATA`, 20 Bytes - the address of the beneficiary to whom the mining rewards were given.
-- `timestamp`: `QUANTITY` - the unix timestamp for when the block was collated.
-- `transactions`: `Array` - Array of transaction objects, or 32 Bytes transaction hashes depending on the last given parameter.
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByHash","params":["0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331", true],"id":1}'
-
-// Result
+```json
 {
-"id":1,
-"jsonrpc":"2.0",
+
+
+	"error": "",
+	"result": {
+		"hash": "E39AAB7A537ABAA237831742DCE1117F187C3C52",
+		"log": "",
+		"data": "",
+		"code": 0
+	},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Required | Description     |
+|-----------+------+---------+----------+-----------------|
+| tx        | Tx   | nil     | true     | The transaction |
+
+## [BroadcastTxCommit](https://github.com/tendermint/tendermint/tree/master/rpc/core/mempool.go?s=3699:3775#L152)
+CONTRACT: only returns error if mempool.BroadcastTx errs (ie. problem with the app)
+or if we timeout waiting for tx to commit.
+If CheckTx or DeliverTx fail, no error will be returned, but the returned result
+will contain a non-OK ABCI code.
+
+```shell
+curl 'localhost:26657/broadcast_tx_commit?tx="789"'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+result, err := client.BroadcastTxCommit("789")
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"error": "",
+	"result": {
+		"height": 26682,
+		"hash": "75CA0F856A4DA078FC4911580360E70CEFB2EBEE",
+		"deliver_tx": {
+			"log": "",
+			"data": "",
+			"code": 0
+		},
+		"check_tx": {
+			"log": "",
+			"data": "",
+			"code": 0
+		}
+	},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Required | Description     |
+|-----------+------+---------+----------+-----------------|
+| tx        | Tx   | nil     | true     | The transaction |
+
+## [BroadcastTxSync](https://github.com/tendermint/tendermint/tree/master/rpc/core/mempool.go?s=2190:2258#L91)
+Returns with the response from CheckTx.
+
+```shell
+curl 'localhost:26657/broadcast_tx_sync?tx="456"'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+result, err := client.BroadcastTxSync("456")
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"jsonrpc": "2.0",
+	"id": "",
+	"result": {
+		"code": 0,
+		"data": "",
+		"log": "",
+		"hash": "0D33F2F03A5234F38706E43004489E061AC40A2E"
+	},
+	"error": ""
+
+}
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Required | Description     |
+|-----------+------+---------+----------+-----------------|
+| tx        | Tx   | nil     | true     | The transaction |
+
+## [Commit](https://github.com/tendermint/tendermint/tree/master/rpc/core/blocks.go?s=8481:8540#L299)
+Get block commit at a given height.
+If no height is provided, it will fetch the commit for the latest block.
+
+```shell
+curl 'localhost:26657/commit?height=11'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+info, err := client.Commit(11)
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"error": "",
+	"result": {
+	  "canonical": true,
+	  "commit": {
+	    "precommits": [
+	      {
+	        "signature": {
+	          "data": "00970429FEC652E9E21D106A90AE8C5413759A7488775CEF4A3F44DC46C7F9D941070E4FBE9ED54DF247FA3983359A0C3A238D61DE55C75C9116D72ABC9CF50F",
+	          "type": "ed25519"
+	        },
+	        "block_id": {
+	          "parts": {
+	            "hash": "9E37CBF266BC044A779E09D81C456E653B89E006",
+	            "total": 1
+	          },
+	          "hash": "CC6E861E31CA4334E9888381B4A9137D1458AB6A"
+	        },
+	        "type": 2,
+	        "round": 0,
+	        "height": 11,
+	        "validator_index": 0,
+	        "validator_address": "E89A51D60F68385E09E716D353373B11F8FACD62"
+	      }
+	    ],
+	    "blockID": {
+	      "parts": {
+	        "hash": "9E37CBF266BC044A779E09D81C456E653B89E006",
+	        "total": 1
+	      },
+	      "hash": "CC6E861E31CA4334E9888381B4A9137D1458AB6A"
+	    }
+	  },
+	  "header": {
+	    "app_hash": "",
+	    "chain_id": "test-chain-6UTNIN",
+	    "height": 11,
+	    "time": "2017-05-29T15:05:54.893Z",
+	    "num_txs": 0,
+	    "last_block_id": {
+	      "parts": {
+	        "hash": "277A4DBEF91483A18B85F2F5677ABF9694DFA40F",
+	        "total": 1
+	      },
+	      "hash": "96B1D2F2D201BA4BC383EB8224139DB1294944E5"
+	    },
+	    "last_commit_hash": "3CE0C9727CE524BA9CB7C91E28F08E2B94001087",
+	    "data_hash": "",
+	    "validators_hash": "9365FC80F234C967BD233F5A3E2AB2F1E4B0E5AA"
+	  }
+	},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
+## [ConsensusParams](https://github.com/tendermint/tendermint/tree/master/rpc/core/consensus.go?s=8054:8131#L297)
+Get the consensus parameters  at the given block height.
+If no height is provided, it will fetch the current consensus params.
+
+```shell
+curl 'localhost:26657/consensus_params'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+state, err := client.ConsensusParams()
+```
+
+The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"jsonrpc": "2.0",
+	"id": "",
+	"result": {
+	  "block_height": "1",
+	  "consensus_params": {
+	    "block_size_params": {
+	      "max_txs_bytes": "22020096",
+	      "max_gas": "-1"
+	    },
+	    "evidence_params": {
+	      "max_age": "100000"
+	    }
+	  }
+	}
+
+}
+```
+
+## [ConsensusState](https://github.com/tendermint/tendermint/tree/master/rpc/core/consensus.go?s=7139:7198#L259)
+ConsensusState returns a concise summary of the consensus state.
+UNSTABLE
+
+```shell
+curl 'localhost:26657/consensus_state'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+state, err := client.ConsensusState()
+```
+
+The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"jsonrpc": "2.0",
+	"id": "",
+	"result": {
+	  "round_state": {
+	    "height/round/step": "9336/0/1",
+	    "start_time": "2018-05-14T10:25:45.72595357-04:00",
+	    "proposal_block_hash": "",
+	    "locked_block_hash": "",
+	    "valid_block_hash": "",
+	    "height_vote_set": [
+	      {
+	        "round": 0,
+	        "prevotes": [
+	          "nil-Vote"
+	        ],
+	        "prevotes_bit_array": "BA{1:_} 0/10 = 0.00",
+	        "precommits": [
+	          "nil-Vote"
+	        ],
+	        "precommits_bit_array": "BA{1:_} 0/10 = 0.00"
+	      }
+	    ]
+	  }
+	}
+
+}
+```
+
+## [DumpConsensusState](https://github.com/tendermint/tendermint/tree/master/rpc/core/consensus.go?s=5397:5464#L192)
+DumpConsensusState dumps consensus state.
+UNSTABLE
+
+```shell
+curl 'localhost:26657/dump_consensus_state'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+state, err := client.DumpConsensusState()
+```
+
+The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"jsonrpc": "2.0",
+	"id": "",
+	"result": {
+	  "round_state": {
+	    "height": 7185,
+	    "round": 0,
+	    "step": 1,
+	    "start_time": "2018-05-12T13:57:28.440293621-07:00",
+	    "commit_time": "2018-05-12T13:57:27.440293621-07:00",
+	    "validators": {
+	      "validators": [
+	        {
+	          "address": "B5B3D40BE53982AD294EF99FF5A34C0C3E5A3244",
+	          "pub_key": {
+	            "type": "tendermint/PubKeyEd25519",
+	            "value": "SBctdhRBcXtBgdI/8a/alTsUhGXqGs9k5ylV1u5iKHg="
+	          },
+	          "voting_power": 10,
+	          "accum": 0
+	        }
+	      ],
+	      "proposer": {
+	        "address": "B5B3D40BE53982AD294EF99FF5A34C0C3E5A3244",
+	        "pub_key": {
+	          "type": "tendermint/PubKeyEd25519",
+	          "value": "SBctdhRBcXtBgdI/8a/alTsUhGXqGs9k5ylV1u5iKHg="
+	        },
+	        "voting_power": 10,
+	        "accum": 0
+	      }
+	    },
+	    "proposal": null,
+	    "proposal_block": null,
+	    "proposal_block_parts": null,
+	    "locked_round": 0,
+	    "locked_block": null,
+	    "locked_block_parts": null,
+	    "valid_round": 0,
+	    "valid_block": null,
+	    "valid_block_parts": null,
+	    "votes": [
+	      {
+	        "round": 0,
+	        "prevotes": "_",
+	        "precommits": "_"
+	      }
+	    ],
+	    "commit_round": -1,
+	    "last_commit": {
+	      "votes": [
+	        "Vote{0:B5B3D40BE539 7184/00/2(Precommit) 14F946FA7EF0 /702B1B1A602A.../ @ 2018-05-12T20:57:27.342Z}"
+	      ],
+	      "votes_bit_array": "x",
+	      "peer_maj_23s": {}
+	    },
+	    "last_validators": {
+	      "validators": [
+	        {
+	          "address": "B5B3D40BE53982AD294EF99FF5A34C0C3E5A3244",
+	          "pub_key": {
+	            "type": "tendermint/PubKeyEd25519",
+	            "value": "SBctdhRBcXtBgdI/8a/alTsUhGXqGs9k5ylV1u5iKHg="
+	          },
+	          "voting_power": 10,
+	          "accum": 0
+	        }
+	      ],
+	      "proposer": {
+	        "address": "B5B3D40BE53982AD294EF99FF5A34C0C3E5A3244",
+	        "pub_key": {
+	          "type": "tendermint/PubKeyEd25519",
+	          "value": "SBctdhRBcXtBgdI/8a/alTsUhGXqGs9k5ylV1u5iKHg="
+	        },
+	        "voting_power": 10,
+	        "accum": 0
+	      }
+	    }
+	  },
+	  "peers": [
+	    {
+	      "node_address": "30ad1854af22506383c3f0e57fb3c7f90984c5e8@172.16.63.221:26656",
+	      "peer_state": {
+	        "round_state": {
+	          "height": 7185,
+	          "round": 0,
+	          "step": 1,
+	          "start_time": "2018-05-12T13:57:27.438039872-07:00",
+	          "proposal": false,
+	          "proposal_block_parts_header": {
+	            "total": 0,
+	            "hash": ""
+	          },
+	          "proposal_block_parts": null,
+	          "proposal_pol_round": -1,
+	          "proposal_pol": "_",
+	          "prevotes": "_",
+	          "precommits": "_",
+	          "last_commit_round": 0,
+	          "last_commit": "x",
+	          "catchup_commit_round": -1,
+	          "catchup_commit": "_"
+	        },
+	        "stats": {
+	          "last_vote_height": 7184,
+	          "votes": 255,
+	          "last_block_part_height": 7184,
+	          "block_parts": 255
+	        }
+	      }
+	    }
+	  ]
+	}
+
+}
+```
+
+## [Genesis](https://github.com/tendermint/tendermint/tree/master/rpc/core/net.go?s=2927:2972#L120)
+Get genesis file.
+
+```shell
+curl 'localhost:26657/genesis'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+genesis, err := client.Genesis()
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"error": "",
+	"result": {
+		"genesis": {
+			"app_hash": "",
+			"validators": [
+				{
+					"name": "",
+					"power": 10,
+					"pub_key": {
+						"data": "68DFDA7E50F82946E7E8546BED37944A422CD1B831E70DF66BA3B8430593944D",
+						"type": "ed25519"
+					}
+				}
+			],
+			"chain_id": "test-chain-6UTNIN",
+			"genesis_time": "2017-05-29T15:05:41.671Z"
+		}
+	},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
+## [Health](https://github.com/tendermint/tendermint/tree/master/rpc/core/health.go?s=519:562#L29)
+Get node health. Returns empty result (200 OK) on success, no response - in
+case of an error.
+
+```shell
+curl 'localhost:26657/health'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+result, err := client.Health()
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"error": "",
+	"result": {},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
+## [NetInfo](https://github.com/tendermint/tendermint/tree/master/rpc/core/net.go?s=594:639#L37)
+Get network info.
+
+```shell
+curl 'localhost:26657/net_info'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+info, err := client.NetInfo()
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"error": "",
+	"result": {
+		"n_peers": 0,
+		"peers": [],
+		"listeners": [
+			"Listener(@10.0.2.15:26656)"
+		],
+		"listening": true
+	},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
+## [NumUnconfirmedTxs](https://github.com/tendermint/tendermint/tree/master/rpc/core/mempool.go?s=7191:7253#L274)
+Get number of unconfirmed transactions.
+
+```shell
+curl 'localhost:26657/num_unconfirmed_txs'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+result, err := client.UnconfirmedTxs()
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"error": "",
+	"result": {
+	  "txs": null,
+	  "n_txs": 0
+	},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
+## [Status](https://github.com/tendermint/tendermint/tree/master/rpc/core/status.go?s=1721:1764#L66)
+Get Tendermint status including node info, pubkey, latest block
+hash, app hash, block height and time.
+
+```shell
+curl 'localhost:26657/status'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+result, err := client.Status()
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+"jsonrpc": "2.0",
+"id": "",
 "result": {
 
 
-	  "number": "0x1b4", // 436
-	  "hash": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331",
-	  "parentHash": "0x9646252be9520f6e71339a8df9c55e4d7619deeb018d2a3f2d21fc165dde5eb5",
-	  "transactionsRoot": "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
-	  "stateRoot": "0xd5855eb08b3387c0af375e9cdb6acfc05eb8f519e419b874b6ff2ffda7ed1dff",
-	  "miner": "0x4e65fda2159562a496f9f3522f89122a3088497a",
-	  "timestamp": "0x54e34e8e" // 1424182926
-	  "transactions": [{...},{ ... }]
+	"node_info": {
+			"id": "53729852020041b956e86685e24394e0bee4373f",
+			"listen_addr": "10.0.2.15:26656",
+			"network": "test-chain-Y1OHx6",
+			"version": "0.24.0-2ce1abc2",
+			"channels": "4020212223303800",
+			"moniker": "ubuntu-xenial",
+			"other": {
+				"amino_version": "0.12.0",
+				"p2p_version": "0.5.0",
+				"consensus_version": "v1/0.2.2",
+				"rpc_version": "0.7.0/3",
+				"tx_index": "on",
+				"rpc_addr": "tcp://0.0.0.0:26657"
+			}
+		},
+		"sync_info": {
+			"latest_block_hash": "F51538DA498299F4C57AC8162AAFA0254CE08286",
+			"latest_app_hash": "0000000000000000",
+			"latest_block_height": "18",
+			"latest_block_time": "2018-09-17T11:42:19.149920551Z",
+			"catching_up": false
+		},
+		"validator_info": {
+			"address": "D9F56456D7C5793815D0E9AF07C3A355D0FC64FD",
+			"pub_key": {
+				"type": "tendermint/PubKeyEd25519",
+				"value": "wVxKNtEsJmR4vvh651LrVoRguPs+6yJJ9Bz174gw9DM="
+			},
+			"voting_power": "10"
+		}
 	}
 
 }
 ```
 
-***
+## [Subscribe](https://github.com/tendermint/tendermint/tree/master/rpc/core/events.go?s=2799:2889#L87)
+Subscribe for events via WebSocket.
 
-## [GetBlockByNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=5406:5499#L192)
-#### eth_getBlockByNumber
+To tell which events you want, you need to provide a query. query is a
+string, which has a form: "condition AND condition ..." (no OR at the
+moment). condition has a form: "key operation operand". key is a string with
+a restricted set of possible symbols ( \t\n\r\\()"'=>< are not allowed).
+operation can be "=", "<", "<=", ">", ">=", "CONTAINS". operand can be a
+string (escaped with single quotes), number, date or time.
 
-Returns information about a block by block number.
-
-##### Parameters
-
-1. `QUANTITY|TAG` - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`, as in the [default block parameter](#the-default-block-parameter).
-2. `Boolean` - If `true` it returns the full transaction objects, if `false` only the hashes of the transactions.
-
-```js
-params: [
+Examples:
 
 
-	'0x1b4', // 436
-	true
+	tm.event = 'NewBlock'								# new blocks
+	tm.event = 'CompleteProposal'				# node got a complete proposal
+	tm.event = 'Tx' AND tx.hash = 'XYZ' # single transaction
+	tm.event = 'Tx' AND tx.height = 5		# all txs of the fifth block
+	tx.height = 5												# all txs of the fifth block
 
-]
+Tendermint provides a few predefined keys: tm.event, tx.hash and tx.height.
+Note for transactions, you can define additional keys by providing tags with
+DeliverTx response.
+
+
+		DeliverTx{
+			Tags: []*KVPair{
+				"agent.name": "K",
+			}
+	  }
+	
+		tm.event = 'Tx' AND agent.name = 'K'
+		tm.event = 'Tx' AND account.created_at >= TIME 2013-05-03T14:45:00Z
+		tm.event = 'Tx' AND contract.sign_date = DATE 2017-01-01
+		tm.event = 'Tx' AND account.owner CONTAINS 'Igor'
+
+See list of all possible events here
+<a href="https://godoc.org/github.com/tendermint/tendermint/types#pkg-constants">https://godoc.org/github.com/tendermint/tendermint/types#pkg-constants</a>
+
+For complete query syntax, check out
+<a href="https://godoc.org/github.com/tendermint/tendermint/libs/pubsub/query">https://godoc.org/github.com/tendermint/tendermint/libs/pubsub/query</a>.
+
+```go
+import "github.com/tendermint/tendermint/libs/pubsub/query"
+import "github.com/tendermint/tendermint/types"
+
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+ctx, cancel := context.WithTimeout(context.Background(), timeout)
+defer cancel()
+query := query.MustParse("tm.event = 'Tx' AND tx.height = 3")
+txs := make(chan interface{})
+err := client.Subscribe(ctx, "test-client", query, txs)
+
+go func() {
+
+
+	  for e := range txs {
+	    fmt.Println("got ", e.(types.EventDataTx))
+		 }
+
+}()
 ```
 
-##### Returns
+> The above command returns JSON structured like this:
 
-See [eth_getBlockByHash](#eth_getblockbyhash)
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["0x1b4", true],"id":1}'
-```
-
-Result see [eth_getBlockByHash](#eth_getblockbyhash)
-
-***
-
-## [GetBlockTransactionCountByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=3334:3408#L111)
-#### eth_getBlockTransactionCountByHash
-
-Returns the number of transactions in a block from a block matching the given block hash.
-
-##### Parameters
-
-1. `DATA`, 32 Bytes - hash of a block.
-
-```js
-params: [
-
-
-	'0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238'
-
-]
-```
-
-##### Returns
-
-`QUANTITY` - integer of the number of transactions in this block.
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockTransactionCountByHash","params":["0xc94770007dda54cF92009BFF0dE90c06F603a09f"],"id":1}'
-
-// Result
+```json
 {
 
 
-	"id":1,
-	"jsonrpc": "2.0",
-	"result": "0xc" // 11
+	"error": "",
+	"result": {},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
 ```
 
-***
+### Query Parameters
 
-## [GetBlockTransactionCountByNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=4345:4431#L153)
-#### eth_getBlockTransactionCountByNumber
-> >
-Returns the number of transactions in a block matching the given block number.
+| Parameter | Type   | Default | Required | Description |
+|-----------+--------+---------+----------+-------------|
+| query     | string | ""      | true     | Query       |
 
-##### Parameters
+<aside class="notice">WebSocket only</aside>
 
-1. `QUANTITY|TAG` - integer of a block number, or the string `"earliest"`, `"latest"` or `"pending"`, as in the [default block parameter](#the-default-block-parameter).
+## [Tx](https://github.com/tendermint/tendermint/tree/master/rpc/core/tx.go?s=2113:2171#L74)
+Tx allows you to query the transaction results. `nil` could mean the
+transaction is in the mempool, invalidated, or was not sent in the first
+place.
 
-```js
-params: [
-
-
-	'0xe8', // 232
-
-]
+```shell
+curl "localhost:26657/tx?hash=0x2B8EC32BA2579B3B8606E42C06DE2F7AFA2556EF"
 ```
 
-##### Returns
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+tx, err := client.Tx([]byte("2B8EC32BA2579B3B8606E42C06DE2F7AFA2556EF"), true)
+```
 
-`QUANTITY` - integer of the number of transactions in this block.
+> The above command returns JSON structured like this:
 
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockTransactionCountByNumber","params":["0xe8"],"id":1}'
-
-// Result
+```json
 {
 
 
-	"id":1,
-	"jsonrpc": "2.0",
-	"result": "0xa" // 10
+	"error": "",
+	"result": {
+		"proof": {
+			"Proof": {
+				"aunts": []
+			},
+			"Data": "YWJjZA==",
+			"RootHash": "2B8EC32BA2579B3B8606E42C06DE2F7AFA2556EF",
+			"Total": 1,
+			"Index": 0
+		},
+		"tx": "YWJjZA==",
+		"tx_result": {
+			"log": "",
+			"data": "",
+			"code": 0
+		},
+		"index": 0,
+		"height": 52,
+		"hash": "2B8EC32BA2579B3B8606E42C06DE2F7AFA2556EF"
+	},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
 ```
 
-***
+Returns a transaction matching the given transaction hash.
 
-## [GetCode](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=8801:8889#L338)
-#### eth_getCode
+### Query Parameters
 
-Returns code at a given address.
+| Parameter | Type   | Default | Required | Description                                               |
+|-----------+--------+---------+----------+-----------------------------------------------------------|
+| hash      | []byte | nil     | true     | The transaction hash                                      |
+| prove     | bool   | false   | false    | Include a proof of the transaction inclusion in the block |
 
-##### Parameters
+### Returns
 
-1. `DATA`, 20 Bytes - address.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`, see the [default block parameter](#the-default-block-parameter).
+- `proof`: the `types.TxProof` object
+- `tx`: `[]byte` - the transaction
+- `tx_result`: the `abci.Result` object
+- `index`: `int` - index of the transaction
+- `height`: `int` - height of the block where this transaction was in
+- `hash`: `[]byte` - hash of the transaction
 
-```js
-params: [
+## [TxSearch](https://github.com/tendermint/tendermint/tree/master/rpc/core/tx.go?s=5167:5257#L175)
+TxSearch allows you to query for multiple transactions results. It returns a
+list of transactions (maximum ?per_page entries) and the total count.
 
-
-	'0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b',
-	'0x2'  // 2
-
-]
+```shell
+curl "localhost:26657/tx_search?query=\"account.owner='Ivan'\"&prove=true"
 ```
 
-##### Returns
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+q, err := tmquery.New("account.owner='Ivan'")
+tx, err := client.TxSearch(q, true)
+```
 
-`DATA` - the code from the given address.
+> The above command returns JSON structured like this:
 
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getCode","params":["0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b", "0x2"],"id":1}'
-
-// Result
+```json
 {
 
 
-	"id":1,
-	"jsonrpc": "2.0",
-	"result": "0x600160008035811a818181146012578301005b601b6001356025565b8060005260206000f25b600060078202905091905056"
+	  "jsonrpc": "2.0",
+	  "id": "",
+	  "result": {
+		   "txs": [
+	      {
+	        "proof": {
+	          "Proof": {
+	            "aunts": [
+	              "J3LHbizt806uKnABNLwG4l7gXCA=",
+	              "iblMO/M1TnNtlAefJyNCeVhjAb0=",
+	              "iVk3ryurVaEEhdeS0ohAJZ3wtB8=",
+	              "5hqMkTeGqpct51ohX0lZLIdsn7Q=",
+	              "afhsNxFnLlZgFDoyPpdQSe0bR8g="
+	            ]
+	          },
+	          "Data": "mvZHHa7HhZ4aRT0xMDA=",
+	          "RootHash": "F6541223AA46E428CB1070E9840D2C3DF3B6D776",
+	          "Total": 32,
+	          "Index": 31
+	        },
+	        "tx": "mvZHHa7HhZ4aRT0xMDA=",
+	        "tx_result": {},
+	        "index": 31,
+	        "height": 12,
+	        "hash": "2B8EC32BA2579B3B8606E42C06DE2F7AFA2556EF"
+	      }
+	    ],
+	    "total_count": 1
+	  }
 
 }
 ```
 
-***
+### Query Parameters
 
-## [GetTransactionByBlockHashAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=15108:15214#L540)
-Result see [eth_getTransactionByHash](#eth_gettransactionbyhash)
-***
+| Parameter | Type   | Default | Required | Description                                               |
+|-----------+--------+---------+----------+-----------------------------------------------------------|
+| query     | string | ""      | true     | Query                                                     |
+| prove     | bool   | false   | false    | Include proofs of the transactions inclusion in the block |
+| page      | int    | 1       | false    | Page number (1-based)                                     |
+| per_page  | int    | 30      | false    | Number of entries per page (max: 100)                     |
 
-## [GetTransactionByBlockNumberAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=16209:16324#L578)
-#### eth_getTransactionByBlockNumberAndIndex
+### Returns
 
-Returns information about a transaction by block number and transaction index position.
+- `proof`: the `types.TxProof` object
+- `tx`: `[]byte` - the transaction
+- `tx_result`: the `abci.Result` object
+- `index`: `int` - index of the transaction
+- `height`: `int` - height of the block where this transaction was in
+- `hash`: `[]byte` - hash of the transaction
 
-##### Parameters
+## [UnconfirmedTxs](https://github.com/tendermint/tendermint/tree/master/rpc/core/mempool.go?s=6517:6585#L242)
+Get unconfirmed transactions (maximum ?limit entries) including their number.
 
-1. `QUANTITY|TAG` - a block number, or the string `"earliest"`, `"latest"` or `"pending"`, as in the [default block parameter](#the-default-block-parameter).
-2. `QUANTITY` - the transaction index position.
-
-```js
-params: [
-
-
-	'0x29c', // 668
-	'0x0' // 0
-
-]
+```shell
+curl 'localhost:26657/unconfirmed_txs'
 ```
 
-##### Returns
-
-See [eth_getTransactionByHash](#eth_gettransactionbyhash)
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByBlockNumberAndIndex","params":["0x29c", "0x0"],"id":1}'
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+result, err := client.UnconfirmedTxs()
 ```
 
-Result see [eth_getTransactionByHash](#eth_gettransactionbyhash)
+> The above command returns JSON structured like this:
 
-***
-
-## [GetTransactionByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=6487:6559#L211)
-#### eth_getTransactionByHash
-
-Returns the information about a transaction requested by transaction hash.
-
-##### Parameters
-
-1. `DATA`, 32 Bytes - hash of a transaction
-
-```js
-params: [
-
-
-	"0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b"
-
-]
-```
-
-##### Returns
-
-`Object` - A transaction object, or `null` when no transaction was found:
-
-- `blockHash`: `DATA`, 32 Bytes - hash of the block where this transaction was in. `null` when its pending.
-- `blockNumber`: `QUANTITY` - block number where this transaction was in. `null` when its pending.
-- `from`: `DATA`, 20 Bytes - address of the sender.
-- `gas`: `QUANTITY` - gas provided by the sender.
-- `gasPrice`: `QUANTITY` - gas price provided by the sender in Wei.
-- `hash`: `DATA`, 32 Bytes - hash of the transaction.
-- `input`: `DATA` - the data send along with the transaction.
-- `nonce`: `QUANTITY` - the number of transactions made by the sender prior to this one.
-- `to`: `DATA`, 20 Bytes - address of the receiver. `null` when its a contract creation transaction.
-- `transactionIndex`: `QUANTITY` - integer of the transactions index position in the block. `null` when its pending.
-- `value`: `QUANTITY` - value transferred in Wei.
-- `v`: `QUANTITY` - ECDSA recovery id
-- `r`: `DATA`, 32 Bytes - ECDSA signature r
-- `s`: `DATA`, 32 Bytes - ECDSA signature s
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b"],"id":1}'
-
-// Result
+```json
 {
 
 
-	"jsonrpc":"2.0",
-	"id":1,
-	"result":{
-	  "blockHash":"0x1d59ff54b1eb26b013ce3cb5fc9dab3705b415a67127a003c3e61eb445bb8df2",
-	  "blockNumber":"0x5daf3b", // 6139707
-	  "from":"0xa7d9ddbe1f17865597fbd27ec712455208b6b76d",
-	  "gas":"0xc350", // 50000
-	  "gasPrice":"0x4a817c800", // 20000000000
-	  "hash":"0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b",
-	  "input":"0x68656c6c6f21",
-	  "nonce":"0x15", // 21
-	  "to":"0xf02c1c8e6114b1dbe8937a39260b5b0a374432bb",
-	  "transactionIndex":"0x41", // 65
-	  "value":"0xf3dbb76162000", // 4290000000000000
-	  "v":"0x25", // 37
-	  "r":"0x1b5e176d927f8e9ab405058b2d2457392da3e20f328b16ddabcebc33eaac5fea",
-	  "s":"0x4ba69724e8f69de52f0125ad8b3c5c2cef33019bac3249e2c0a2192766d1721c"
-	}
+	"error": "",
+	"result": {
+	  "txs": [],
+	  "n_txs": 0
+	},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
-```
-***
 
-## [GetTransactionCount](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=10247:10348#L396)
-#### eth_getTransactionCount
+### Query Parameters
 
-Returns the number of transactions *sent* from an address.
-
-##### Parameters
-
-1. `DATA`, 20 Bytes - address.
-2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`, see the [default block parameter](#the-default-block-parameter)
-
-```js
-params: [
-
-
-	'0xc94770007dda54cF92009BFF0dE90c06F603a09f',
-	'latest' // state at the latest block
-
-]
+| Parameter | Type | Default | Required | Description                          |
+|-----------+------+---------+----------+--------------------------------------|
+| limit     | int  | 30      | false    | Maximum number of entries (max: 100) |
 ```
 
-##### Returns
+## [UnsafeDialPeers](https://github.com/tendermint/tendermint/tree/master/rpc/core/net.go?s=1645:1731#L70)
+## [UnsafeDialSeeds](https://github.com/tendermint/tendermint/tree/master/rpc/core/net.go?s=1143:1212#L57)
+## [Unsubscribe](https://github.com/tendermint/tendermint/tree/master/rpc/core/events.go?s=4191:4285#L139)
+Unsubscribe from events via WebSocket.
 
-`QUANTITY` - integer of the number of transactions send from this address.
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+err := client.Unsubscribe("test-client", query)
+```
 
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["0xc94770007dda54cF92009BFF0dE90c06F603a09f","latest"],"id":1}'
+> The above command returns JSON structured like this:
 
-// Result
+```json
 {
 
 
-	"id":1,
-	"jsonrpc": "2.0",
-	"result": "0x1" // 1
+	"error": "",
+	"result": {},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
 ```
 
-***
+### Query Parameters
 
-## [GetTransactionReceipt](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=11549:11618#L396)
-#### eth_getTransactionReceipt
+| Parameter | Type   | Default | Required | Description |
+|-----------+--------+---------+----------+-------------|
+| query     | string | ""      | true     | Query       |
 
-Returns the receipt of a transaction by transaction hash.
+<aside class="notice">WebSocket only</aside>
 
-**Note** That the receipt is not available for pending transactions.
+## [UnsubscribeAll](https://github.com/tendermint/tendermint/tree/master/rpc/core/events.go?s=5037:5120#L172)
+Unsubscribe from all events via WebSocket.
 
-##### Parameters
-
-1. `DATA`, 32 Bytes - hash of a transaction
-
-```js
-params: [
-
-
-	'0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238'
-
-]
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+err := client.UnsubscribeAll("test-client")
 ```
 
-##### Returns
+> The above command returns JSON structured like this:
 
-`Object` - A transaction receipt object, or `null` when no receipt was found:
-
-- `transactionHash `: `DATA`, 32 Bytes - hash of the transaction.
-- `transactionIndex`: `QUANTITY` - integer of the transactions index position in the block.
-- `blockHash`: `DATA`, 32 Bytes - hash of the block where this transaction was in.
-- `blockNumber`: `QUANTITY` - block number where this transaction was in.
-- `from`: `DATA`, 20 Bytes - address of the sender.
-- `to`: `DATA`, 20 Bytes - address of the receiver. null when its a contract creation transaction.
-- `cumulativeGasUsed `: `QUANTITY ` - The total amount of gas used when this transaction was executed in the block.
-- `gasUsed `: `QUANTITY ` - The amount of gas used by this specific transaction alone.
-- `contractAddress `: `DATA`, 20 Bytes - The contract address created, if the transaction was a contract creation, otherwise `null`.
-- `logs`: `Array` - Array of log objects, which this transaction generated.
-- `logsBloom`: `DATA`, 256 Bytes - Bloom filter for light clients to quickly retrieve related logs.
-
-It also returns _either_ :
-
-- `root` : `DATA` 32 bytes of post-transaction stateroot (pre Byzantium)
-- `status`: `QUANTITY` either `1` (success) or `0` (failure)
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionReceipt","params":["0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"],"id":1}'
-
-// Result
-{
-"id":1,
-"jsonrpc":"2.0",
-"result": {
-
-
-	   transactionHash: '0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238',
-	   transactionIndex:  '0x1', // 1
-	   blockNumber: '0xb', // 11
-	   blockHash: '0xc6ef2fc5426d6ad6fd9e2a26abeab0aa2411b7ab17f30a99d3cb96aed1d1055b',
-	   cumulativeGasUsed: '0x33bc', // 13244
-	   gasUsed: '0x4dc', // 1244
-	   contractAddress: '0xb60e8dd61c5d32be8058bb8eb970870f07233155', // or null, if none was created
-	   logs: [{
-	       // logs as returned by getFilterLogs, etc.
-	   }, ...],
-	   logsBloom: "0x00...0", // 256 byte bloom filter
-	   status: '0x1'
-	}
-
-}
-```
-***
-
-## [RPCMarshalBlock](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=11269:11360#L435)
-## [SendTransaction](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=2549:2611#L74)
-#### eth_sendTransaction
-
-Creates new message call transaction or a contract creation, if the data field contains code.
-
-##### Parameters
-
-1. `Object` - The transaction object
-- `from`: `DATA`, 20 Bytes - The address the transaction is send from.
-- `to`: `DATA`, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
-- `gas`: `QUANTITY`  - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
-- `gasPrice`: `QUANTITY`  - (optional, default: To-Be-Determined) Integer of the gasPrice used for each paid gas
-- `value`: `QUANTITY`  - (optional) Integer of the value sent with this transaction
-- `data`: `DATA`  - The compiled code of a contract OR the hash of the invoked method signature and encoded parameters. For details see [Ethereum Contract ABI](<a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI</a>)
-- `nonce`: `QUANTITY`  - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-
-```js
-params: [{
-
-
-	"from": "0xb60e8dd61c5d32be8058bb8eb970870f07233155",
-	"to": "0xd46e8dd67c5d32be8058bb8eb970870f07244567",
-	"gas": "0x76c0", // 30400
-	"gasPrice": "0x9184e72a000", // 10000000000000
-	"value": "0x9184e72a", // 2441406250
-	"data": "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"
-
-}]
-```
-
-##### Returns
-
-`DATA`, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.
-
-Use [eth_getTransactionReceipt](#eth_gettransactionreceipt) to get the contract address, after the transaction was mined, when you created a contract.
-
-##### Example
-```js
-// Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{see above}],"id":1}'
-
-// Result
+```json
 {
 
 
-	"id":1,
-	"jsonrpc": "2.0",
-	"result": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331"
+	"error": "",
+	"result": {},
+	"id": "",
+	"jsonrpc": "2.0"
 
 }
 ```
 
-***
+<aside class="notice">WebSocket only</aside>
 
-## [SetSwCh](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=476:511#L23)
-## [TypeConvert](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=10877:10917#L418)
+## [Validators](https://github.com/tendermint/tendermint/tree/master/rpc/core/consensus.go?s=1045:1112#L46)
+Get the validator set at the given block height.
+If no height is provided, it will fetch the current validator set.
+
+```shell
+curl 'localhost:26657/validators'
+```
+
+```go
+client := client.NewHTTP("tcp://0.0.0.0:26657", "/websocket")
+state, err := client.Validators()
+```
+
+The above command returns JSON structured like this:
+
+```json
+{
+
+
+	"error": "",
+	"result": {
+		"validators": [
+			{
+				"accum": 0,
+				"voting_power": 10,
+				"pub_key": {
+					"data": "68DFDA7E50F82946E7E8546BED37944A422CD1B831E70DF66BA3B8430593944D",
+					"type": "ed25519"
+				},
+				"address": "E89A51D60F68385E09E716D353373B11F8FACD62"
+			}
+		],
+		"block_height": 5241
+	},
+	"id": "",
+	"jsonrpc": "2.0"
+
+}
+```
+
 
 
 ---
