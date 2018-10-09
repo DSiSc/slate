@@ -3,6 +3,7 @@ title: RPC Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell
+  - go
 
 toc_footers:
   - <a href='http://www.codeaslaw.io/'>Justitia</a>
@@ -10,6 +11,15 @@ toc_footers:
 
 search: true
 ---
+
+# Introduction
+
+Justitia RPC is built using our own RPC library which contains its own set of documentation and tests.
+See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">https://github.com/DSiSc/apigateway/tree/master/rpc/lib</a>
+
+Or resort to the rpc documentation at: <a href="https://dsisc.github.io/slate/">https://dsisc.github.io/slate/</a>
+
+# Endpoints
 
 
 
