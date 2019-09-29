@@ -1,4 +1,4 @@
----
+ ---
 title: RPC Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
@@ -55,7 +55,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id
 ***
 
 ## [Call](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=23820:23899#L767)
-#### eth_call
+#### eth_call (Solidity)
 
 Executes a new message call immediately without creating a transaction on the block chain.
 
@@ -69,6 +69,18 @@ Executes a new message call immediately without creating a transaction on the bl
 - `value`: `QUANTITY`  - (optional) Integer of the value sent with this transaction
 - `data`: `DATA`  - (optional) Hash of the method signature and encoded parameters. For details see [Ethereum Contract ABI](<a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI</a>)
 2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`, see the [default block parameter](#the-default-block-parameter)
+```js
+params: [{
+
+
+	"from": "0xb60e8dd61c5d32be8058bb8eb970870f07233155",
+	"to": "0xd46e8dd67c5d32be8058bb8eb970870f07244567",
+	"gas": "0x76c0", // 30400
+	"gasPrice": "0x9184e72a000", // 10000000000000
+	"value": "0x9184e72a", // 2441406250
+	"data": "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"
+}]
+```
 
 ##### Returns
 
@@ -86,6 +98,55 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_call","params":[{see above}]
 	"id":1,
 	"jsonrpc": "2.0",
 	"result": "0x"
+
+}
+```
+
+***
+
+## [WasmCall](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=23820:23899#L767)
+#### eth_call (WASM)
+
+Executes a new message call immediately without creating a transaction on the block chain.
+
+##### Parameters
+
+1. `Object` - The transaction call object
+- `from`: `DATA`, 20 Bytes - (optional) The address the transaction is sent from.
+- `to`: `DATA`, 20 Bytes  - The address the transaction is directed to.
+- `gas`: `QUANTITY`  - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.
+- `gasPrice`: `QUANTITY`  - (optional) Integer of the gasPrice used for each paid gas
+- `value`: `QUANTITY`  - (optional) Integer of the value sent with this transaction
+- `data`: `DATA`  - json encoded parameters.
+2. `QUANTITY|TAG` - integer block number, or the string `"latest"`, `"earliest"` or `"pending"`, see the [default block parameter](#the-default-block-parameter)
+
+```js
+params: [{
+	"from": "0xb60e8dd61c5d32be8058bb8eb970870f07233155",
+	"to": "0xd46e8dd67c5d32be8058bb8eb970870f07244567",
+	"gas": "0x76c0", // 30400
+	"gasPrice": "0x9184e72a000", // 10000000000000
+	"value": "0x9184e72a", // 2441406250
+	"data": $json.encode({"method1", "hello"})
+}]
+```
+
+##### Returns
+
+`DATA` - the return json encoded value of executed contract.
+
+##### Example
+```js
+// Request
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_call","params":[{see above}],"id":1}'
+
+// Result
+{
+
+
+	"id":1,
+	"jsonrpc": "2.0",
+	"result": $json.encode({"Hello World"}),
 
 }
 ```
@@ -698,6 +759,60 @@ params: [{
 	"gasPrice": "0x9184e72a000", // 10000000000000
 	"value": "0x9184e72a", // 2441406250
 	"data": "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"
+
+}]
+```
+
+##### Returns
+
+`DATA`, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.
+
+Use [eth_getTransactionReceipt](#eth_gettransactionreceipt) to get the contract address, after the transaction was mined, when you created a contract.
+
+##### Example
+```js
+// Request
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{see above}],"id":1}'
+
+// Result
+{
+
+
+	"id":1,
+	"jsonrpc": "2.0",
+	"result": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331"
+
+}
+```
+
+***
+
+## [SendWasmTransaction](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=2849:2911#L82)
+#### eth_sendTransaction
+
+Creates new message call wasm contract creation.
+
+##### Parameters
+
+1. `Object` - The transaction object
+- `from`: `DATA`, 20 Bytes - The address the transaction is send from.
+- `to`: `DATA`, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
+- `gas`: `QUANTITY`  - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
+- `gasPrice`: `QUANTITY`  - (optional, default: To-Be-Determined) Integer of the gasPrice used for each paid gas
+- `value`: `QUANTITY`  - (optional) Integer of the value sent with this transaction
+- `data`: `DATA`  - The compiled wasm code of a contract OR the json encoded parameters.
+- `nonce`: `QUANTITY`  - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+
+```js
+params: [{
+
+
+	"from": "0xb60e8dd61c5d32be8058bb8eb970870f07233155",
+	"to": "0xd46e8dd67c5d32be8058bb8eb970870f07244567",
+	"gas": "0x76c0", // 30400
+	"gasPrice": "0x9184e72a000", // 10000000000000
+	"value": "0x9184e72a", // 2441406250
+	"data": $json.encode({"method1", "hello"}),
 
 }]
 ```
