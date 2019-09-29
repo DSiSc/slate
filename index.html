@@ -252,7 +252,7 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <span class="p">}</span>
 </code></pre>
 <hr>
-<h2 id='call'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=23823:23902#L768">Call</a></h2><h4 id='eth_call'>eth_call</h4>
+<h2 id='call'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=23820:23899#L767">Call</a></h2><h4 id='eth_call'>eth_call</h4>
 <p>Executes a new message call immediately without creating a transaction on the block chain.</p>
 <h5 id='parameters-2'>Parameters</h5>
 <ol>
@@ -281,7 +281,7 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <span class="p">}</span>
 </code></pre>
 <hr>
-<h2 id='estimategas'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=27686:27746#L920">EstimateGas</a></h2><h4 id='eth_estimategas'>eth_estimateGas</h4>
+<h2 id='estimategas'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=27683:27743#L919">EstimateGas</a></h2><h4 id='eth_estimategas'>eth_estimateGas</h4>
 <p>Generates and returns an estimate of how much gas is necessary to allow the transaction to complete. The transaction will not be added to the blockchain. Note that the estimate may be significantly more than the amount of gas actually used by the transaction, for a variety of reasons including EVM mechanics and node performance.</p>
 <h5 id='parameters-3'>Parameters</h5>
 <p>See <a href="#eth_call">eth_call</a> parameters, expect that all properties are optional. If no gas limit is specified geth uses the block gas limit from the pending block as an upper bound. As a result the returned estimate might not be enough to executed the call/transaction when the amount of gas is higher than the pending block gas limit.</p>
@@ -301,7 +301,7 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <span class="p">}</span>
 </code></pre>
 <hr>
-<h2 id='gasprice'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=26552:26585#L890">GasPrice</a></h2><h4 id='eth_gasprice'>eth_gasPrice</h4>
+<h2 id='gasprice'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=26549:26582#L889">GasPrice</a></h2><h4 id='eth_gasprice'>eth_gasPrice</h4>
 <p>Returns the current price per gas in wei.</p>
 <h5 id='parameters-4'>Parameters</h5>
 <p>none</p>
@@ -514,11 +514,11 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <span class="p">}</span>
 </code></pre>
 <hr>
-<h2 id='gettransactionbyblockhashandindex'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=20929:21035#L681">GetTransactionByBlockHashAndIndex</a></h2>
+
 <p>Result see <a href="#eth_gettransactionbyhash">eth_getTransactionByHash</a></p>
 
 <hr>
-<h2 id='gettransactionbyblocknumberandindex'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=22030:22145#L719">GetTransactionByBlockNumberAndIndex</a></h2><h4 id='eth_gettransactionbyblocknumberandindex'>eth_getTransactionByBlockNumberAndIndex</h4>
+<h2 id='gettransactionbyblocknumberandindex'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=22027:22142#L718">GetTransactionByBlockNumberAndIndex</a></h2><h4 id='eth_gettransactionbyblocknumberandindex'>eth_getTransactionByBlockNumberAndIndex</h4>
 <p>Returns information about a transaction by block number and transaction index position.</p>
 <h5 id='parameters-11'>Parameters</h5>
 <ol>
@@ -540,7 +540,7 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <p>Result see <a href="#eth_gettransactionbyhash">eth_getTransactionByHash</a></p>
 
 <hr>
-<h2 id='gettransactionbyhash'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=13216:13288#L423">GetTransactionByHash</a></h2><h4 id='eth_gettransactionbyhash'>eth_getTransactionByHash</h4>
+<h2 id='gettransactionbyhash'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=13213:13285#L422">GetTransactionByHash</a></h2><h4 id='eth_gettransactionbyhash'>eth_getTransactionByHash</h4>
 <p>Returns the information about a transaction requested by transaction hash.</p>
 <h5 id='parameters-12'>Parameters</h5>
 <ol>
@@ -630,7 +630,7 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <span class="p">}</span>
 </code></pre>
 <hr>
-<h2 id='gettransactionreceipt'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=17633:17702#L563">GetTransactionReceipt</a></h2><h4 id='eth_gettransactionreceipt'>eth_getTransactionReceipt</h4>
+<h2 id='gettransactionreceipt'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=17630:17699#L562">GetTransactionReceipt</a></h2><h4 id='eth_gettransactionreceipt'>eth_getTransactionReceipt</h4>
 <p>Returns the receipt of a transaction by transaction hash.</p>
 
 <p><strong>Note</strong> That the receipt is not available for pending transactions.</p>
@@ -694,7 +694,23 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <span class="p">}</span>
 </code></pre>
 <hr>
-<h2 id='sendrawtransaction'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=6732:6795#L205">SendRawTransaction</a></h2>
+<h2 id='sendrawtransaction'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=6729:6792#L204">SendRawTransaction</a></h2><h4 id='eth_sendrawtransaction'>eth_sendRawTransaction</h4>
+<p>Creates new message call transaction or a contract creation for signed transactions.</p>
+<h5 id='parameters-15'>Parameters</h5>
+<ol>
+<li><code>DATA</code> - The signed transaction data.</li>
+<li><code>from</code>: <code>DATA</code>, 20 Bytes - The address the transaction is send from.</li>
+<li><code>to</code>: <code>DATA</code>, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.</li>
+<li><code>gas</code>: <code>QUANTITY</code>  - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.</li>
+<li><code>gasPrice</code>: <code>QUANTITY</code>  - (optional, default: To-Be-Determined) Integer of the gasPrice used for each paid gas</li>
+<li><code>value</code>: <code>QUANTITY</code>  - (optional) Integer of the value sent with this transaction</li>
+<li><code>data</code>: <code>DATA</code>  - The compiled code of a contract OR the hash of the invoked method signature and encoded parameters. For details see <a href="a%20href=&quot;https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI&quot;&gt;https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI&lt;/a">Ethereum Contract ABI</a></li>
+<li><code>nonce</code>: <code>QUANTITY</code>  - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.</li>
+</ol>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0xf8acf8a70b869184e72a00008276c094d46e8dd67c5d32be8058bb8eb970870f0724456794b60e8dd61c5d32be8058bb8eb970870f07233155849184e72aa9d46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f0724456751ba0a81f79d00e342f5df1c47acabfd0ccc77a3f9ab919a15d5a6699d6de2c4ffbdda07b721e0eb6a50e7bce582dbd71f690004eab409abe7b6cb57b04a240d814ee6dc0c0c0"</span><span class="p">]</span>
+</code></pre><h5 id='returns-15'>Returns</h5>
+<p><code>DATA</code>, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.</p>
+
 <p>Use <a href="#eth_gettransactionreceipt">eth_getTransactionReceipt</a> to get the contract address, after the transaction was mined, when you created a contract.</p>
 <h5 id='example-15'>Example</h5><pre class="highlight javascript"><code><span class="c1">// Request</span>
 <span class="nx">curl</span> <span class="o">-</span><span class="nx">X</span> <span class="nx">POST</span> <span class="o">--</span><span class="nx">data</span> <span class="s1">'{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params":[{see above}],"id":1}'</span>
@@ -709,7 +725,7 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <hr>
 <h2 id='sendtransaction'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=2849:2911#L82">SendTransaction</a></h2><h4 id='eth_sendtransaction'>eth_sendTransaction</h4>
 <p>Creates new message call transaction or a contract creation, if the data field contains code.</p>
-<h5 id='parameters-15'>Parameters</h5>
+<h5 id='parameters-16'>Parameters</h5>
 <ol>
 <li><code>Object</code> - The transaction object</li>
 <li><code>from</code>: <code>DATA</code>, 20 Bytes - The address the transaction is send from.</li>
@@ -731,7 +747,7 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
     <span class="s2">"data"</span><span class="p">:</span> <span class="s2">"0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675"</span>
 
 <span class="p">}]</span>
-</code></pre><h5 id='returns-15'>Returns</h5>
+</code></pre><h5 id='returns-16'>Returns</h5>
 <p><code>DATA</code>, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.</p>
 
 <p>Use <a href="#eth_gettransactionreceipt">eth_getTransactionReceipt</a> to get the contract address, after the transaction was mined, when you created a contract.</p>
@@ -749,19 +765,22 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <span class="p">}</span>
 </code></pre>
 <hr>
-<h2 id='subscribe'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=2476:2561#L70">Subscribe</a></h2><h4 id='eth_subscribe'>eth_subscribe</h4>
+<h2 id='subscribe'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=2517:2602#L74">Subscribe</a></h2><h4 id='eth_subscribe'>eth_subscribe</h4>
 <p>Subscribe for events(newHeads/logs/newPendingTransactions) via WebSocket.</p>
-<h5 id='parameters-16'>Parameters</h5>
+<h5 id='parameters-17'>Parameters</h5>
 <ol>
 <li><code>Data</code> - subscription name <code>&quot;newHeads&quot;</code>, <code>&quot;logs&quot;</code> or <code>&quot;newPendingTransactions&quot;</code>（newHeads: new header is appended to the chain; logs: new logs are included in new blocks; newPendingTransactions: new transactions are added to the pending state and are signed with a key that is available in the node）.</li>
 </ol>
-<h5 id='returns-16'>Returns</h5>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"newHeads"</span><span class="p">]</span>
+</code></pre><h5 id='returns-17'>Returns</h5>
 <p>subscription id</p>
 <h5 id='example-17'>Example</h5><pre class="highlight javascript"><code><span class="c1">// Request</span>
-<span class="nx">curl</span> <span class="o">-</span><span class="nx">X</span> <span class="nx">POST</span> <span class="o">--</span><span class="nx">data</span> <span class="s1">'{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":1}'</span>
+<span class="nx">curl</span> <span class="o">-</span><span class="nx">X</span> <span class="nx">POST</span> <span class="o">--</span><span class="nx">data</span> <span class="s1">'{"jsonrpc":"2.0","method":"eth_subscribe","params":[{see above}],"id":1}'</span>
 
 <span class="c1">// Result</span>
 <span class="p">{</span>
+
+
     <span class="s2">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
     <span class="s2">"jsonrpc"</span><span class="p">:</span> <span class="s2">"2.0"</span><span class="p">,</span>
     <span class="s2">"result"</span><span class="p">:</span> <span class="s2">"0x919d38fa5c395fa0f677e6554eef74fc7"</span>
@@ -771,16 +790,17 @@ See it here: <a href="https://github.com/DSiSc/apigateway/tree/master/rpc/lib">h
 <hr>
 
 <p>Subscribe for events via WebSocket.</p>
-<h2 id='unsubscribe'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=6599:6672#L212">UnSubscribe</a></h2><h4 id='eth_unsubscribe'>eth_unsubscribe</h4>
+<h2 id='unsubscribe'><a href="https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=6681:6754#L220">UnSubscribe</a></h2><h4 id='eth_unsubscribe'>eth_unsubscribe</h4>
 <p>Unsubscribe events via WebSocket.</p>
-<h5 id='parameters-17'>Parameters</h5>
+<h5 id='parameters-18'>Parameters</h5>
 <ol>
 <li><code>Data</code> - subscription id</li>
 </ol>
-<h5 id='returns-17'>Returns</h5>
+<pre class="highlight javascript"><code><span class="nx">params</span><span class="p">:</span> <span class="p">[</span><span class="s2">"0x919d38fa5c395fa0f677e6554eef74fc7"</span><span class="p">]</span>
+</code></pre><h5 id='returns-18'>Returns</h5>
 <p>unsubscribe result</p>
 <h5 id='example-18'>Example</h5><pre class="highlight javascript"><code><span class="c1">// Request</span>
-<span class="nx">curl</span> <span class="o">-</span><span class="nx">X</span> <span class="nx">POST</span> <span class="o">--</span><span class="nx">data</span> <span class="s1">'{"jsonrpc":"2.0","method":"eth_unsubscribe","params":["0x919d38fa5c395fa0f677e6554eef74fc7"],"id":1}'</span>
+<span class="nx">curl</span> <span class="o">-</span><span class="nx">X</span> <span class="nx">POST</span> <span class="o">--</span><span class="nx">data</span> <span class="s1">'{"jsonrpc":"2.0","method":"eth_unsubscribe","params":[{see above}],"id":1}'</span>
 
 <span class="c1">// Result</span>
 <span class="p">{</span>
