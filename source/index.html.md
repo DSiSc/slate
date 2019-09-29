@@ -24,7 +24,7 @@ Or resort to the rpc documentation at: <a href="https://dsisc.github.io/slate/">
 
 
 
-## [BlockNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=6293:6332#L235)
+## [BlockNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=6355:6394#L237)
 #### eth_blockNumber
 
 Returns the number of most recent block.
@@ -54,7 +54,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id
 
 ***
 
-## [Call](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=18002:18081#L627)
+## [Call](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=23823:23902#L768)
 #### eth_call
 
 Executes a new message call immediately without creating a transaction on the block chain.
@@ -92,7 +92,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_call","params":[{see above}]
 
 ***
 
-## [EstimateGas](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=21773:21833#L777)
+## [EstimateGas](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=27686:27746#L920)
 #### eth_estimateGas
 
 Generates and returns an estimate of how much gas is necessary to allow the transaction to complete. The transaction will not be added to the blockchain. Note that the estimate may be significantly more than the amount of gas actually used by the transaction, for a variety of reasons including EVM mechanics and node performance.
@@ -123,7 +123,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_estimateGas","params":[{see 
 
 ***
 
-## [GasPrice](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=20639:20672#L747)
+## [GasPrice](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=26552:26585#L890)
 #### eth_gasPrice
 
 Returns the current price per gas in wei.
@@ -153,7 +153,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_gasPrice","params":[],"id":7
 
 ***
 
-## [GetBalance](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=7363:7452#L280)
+## [GetBalance](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=7425:7514#L282)
 #### eth_getBalance
 
 Returns the balance of the account of given address.
@@ -195,7 +195,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0xc94
 
 ***
 
-## [GetBlockByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=2318:2399#L65)
+## [GetBlockByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=2345:2426#L66)
 #### eth_getBlockByHash
 
 Returns information about a block by hash.
@@ -256,7 +256,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByHash","params":["0
 
 ***
 
-## [GetBlockByNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=5406:5499#L192)
+## [GetBlockByNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=5433:5526#L193)
 #### eth_getBlockByNumber
 
 Returns information about a block by block number.
@@ -290,7 +290,7 @@ Result see [eth_getBlockByHash](#eth_getblockbyhash)
 
 ***
 
-## [GetBlockTransactionCountByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=3334:3408#L111)
+## [GetBlockTransactionCountByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=3361:3435#L112)
 #### eth_getBlockTransactionCountByHash
 
 Returns the number of transactions in a block from a block matching the given block hash.
@@ -330,7 +330,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockTransactionCountByHa
 
 ***
 
-## [GetBlockTransactionCountByNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=4345:4431#L153)
+## [GetBlockTransactionCountByNumber](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=4372:4458#L154)
 #### eth_getBlockTransactionCountByNumber
 > >
 Returns the number of transactions in a block matching the given block number.
@@ -370,7 +370,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockTransactionCountByNu
 
 ***
 
-## [GetCode](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=8801:8889#L338)
+## [GetCode](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=8868:8956#L340)
 #### eth_getCode
 
 Returns code at a given address.
@@ -412,11 +412,11 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getCode","params":["0xa94f53
 
 ***
 
-## [GetTransactionByBlockHashAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=15108:15214#L540)
+## [GetTransactionByBlockHashAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=20929:21035#L681)
 Result see [eth_getTransactionByHash](#eth_gettransactionbyhash)
 ***
 
-## [GetTransactionByBlockNumberAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=16209:16324#L578)
+## [GetTransactionByBlockNumberAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=22030:22145#L719)
 #### eth_getTransactionByBlockNumberAndIndex
 
 Returns information about a transaction by block number and transaction index position.
@@ -450,7 +450,7 @@ Result see [eth_getTransactionByHash](#eth_gettransactionbyhash)
 
 ***
 
-## [GetTransactionByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=6487:6559#L211)
+## [GetTransactionByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=13216:13288#L423)
 #### eth_getTransactionByHash
 
 Returns the information about a transaction requested by transaction hash.
@@ -519,7 +519,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","param
 ```
 ***
 
-## [GetTransactionCount](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=10247:10348#L396)
+## [GetTransactionCount](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=10319:10420#L398)
 #### eth_getTransactionCount
 
 Returns the number of transactions *sent* from an address.
@@ -561,7 +561,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionCount","params
 
 ***
 
-## [GetTransactionReceipt](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=11549:11618#L396)
+## [GetTransactionReceipt](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=17633:17702#L563)
 #### eth_getTransactionReceipt
 
 Returns the receipt of a transaction by transaction hash.
@@ -632,8 +632,26 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionReceipt","para
 ```
 ***
 
-## [RPCMarshalBlock](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=11269:11360#L435)
-## [SendTransaction](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=2549:2611#L74)
+
+## [SendRawTransaction](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=6732:6795#L205)
+Use [eth_getTransactionReceipt](#eth_gettransactionreceipt) to get the contract address, after the transaction was mined, when you created a contract.
+
+##### Example
+```js
+// Request
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params":[{see above}],"id":1}'
+
+// Result
+{
+"id":1,
+"jsonrpc": "2.0",
+"result": "0x919d38fa5c395fa0f677e6554eef74fc7a48a64c087e320d538114c714d67d8f"
+}
+```
+
+***
+
+## [SendTransaction](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=2849:2911#L82)
 #### eth_sendTransaction
 
 Creates new message call transaction or a contract creation, if the data field contains code.
@@ -687,8 +705,65 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{
 
 ***
 
-## [SetSwCh](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=476:511#L23)
-## [TypeConvert](https://github.com/DSiSc/apigateway/tree/master/rpc/core/block.go?s=10877:10917#L418)
+## [Subscribe](https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=2476:2561#L70)
+#### eth_subscribe
+
+Subscribe for events(newHeads/logs/newPendingTransactions) via WebSocket.
+
+##### Parameters
+
+1. `Data` - subscription name `"newHeads"`, `"logs"` or `"newPendingTransactions"`（newHeads: new header is appended to the chain; logs: new logs are included in new blocks; newPendingTransactions: new transactions are added to the pending state and are signed with a key that is available in the node）.
+
+##### Returns
+
+subscription id
+
+##### Example
+```js
+// Request
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":1}'
+
+// Result
+{
+	"id":1,
+	"jsonrpc": "2.0",
+	"result": "0x919d38fa5c395fa0f677e6554eef74fc7"
+
+}
+```
+***
+Subscribe for events via WebSocket.
+
+## [UnSubscribe](https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=6599:6672#L212)
+#### eth_unsubscribe
+
+Unsubscribe events via WebSocket.
+
+##### Parameters
+
+1. `Data` - subscription id
+
+##### Returns
+
+unsubscribe result
+
+##### Example
+```js
+// Request
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_unsubscribe","params":["0x919d38fa5c395fa0f677e6554eef74fc7"],"id":1}'
+
+// Result
+{
+
+
+	"id":1,
+	"jsonrpc": "2.0",
+	"result": "true"
+
+}
+```
+***
+Unsubscribe events via WebSocket.
 
 
 ---
