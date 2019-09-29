@@ -54,7 +54,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id
 
 ***
 
-## [Call](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=23823:23902#L768)
+## [Call](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=23820:23899#L767)
 #### eth_call
 
 Executes a new message call immediately without creating a transaction on the block chain.
@@ -92,7 +92,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_call","params":[{see above}]
 
 ***
 
-## [EstimateGas](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=27686:27746#L920)
+## [EstimateGas](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=27683:27743#L919)
 #### eth_estimateGas
 
 Generates and returns an estimate of how much gas is necessary to allow the transaction to complete. The transaction will not be added to the blockchain. Note that the estimate may be significantly more than the amount of gas actually used by the transaction, for a variety of reasons including EVM mechanics and node performance.
@@ -123,7 +123,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_estimateGas","params":[{see 
 
 ***
 
-## [GasPrice](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=26552:26585#L890)
+## [GasPrice](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=26549:26582#L889)
 #### eth_gasPrice
 
 Returns the current price per gas in wei.
@@ -412,11 +412,10 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getCode","params":["0xa94f53
 
 ***
 
-## [GetTransactionByBlockHashAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=20929:21035#L681)
 Result see [eth_getTransactionByHash](#eth_gettransactionbyhash)
 ***
 
-## [GetTransactionByBlockNumberAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=22030:22145#L719)
+## [GetTransactionByBlockNumberAndIndex](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=22027:22142#L718)
 #### eth_getTransactionByBlockNumberAndIndex
 
 Returns information about a transaction by block number and transaction index position.
@@ -450,7 +449,7 @@ Result see [eth_getTransactionByHash](#eth_gettransactionbyhash)
 
 ***
 
-## [GetTransactionByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=13216:13288#L423)
+## [GetTransactionByHash](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=13213:13285#L422)
 #### eth_getTransactionByHash
 
 Returns the information about a transaction requested by transaction hash.
@@ -561,7 +560,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionCount","params
 
 ***
 
-## [GetTransactionReceipt](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=17633:17702#L563)
+## [GetTransactionReceipt](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=17630:17699#L562)
 #### eth_getTransactionReceipt
 
 Returns the receipt of a transaction by transaction hash.
@@ -632,8 +631,30 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionReceipt","para
 ```
 ***
 
+## [SendRawTransaction](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=6729:6792#L204)
+#### eth_sendRawTransaction
 
-## [SendRawTransaction](https://github.com/DSiSc/apigateway/tree/master/rpc/core/tx.go?s=6732:6795#L205)
+Creates new message call transaction or a contract creation for signed transactions.
+
+##### Parameters
+
+1. `DATA` - The signed transaction data.
+- `from`: `DATA`, 20 Bytes - The address the transaction is send from.
+- `to`: `DATA`, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
+- `gas`: `QUANTITY`  - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
+- `gasPrice`: `QUANTITY`  - (optional, default: To-Be-Determined) Integer of the gasPrice used for each paid gas
+- `value`: `QUANTITY`  - (optional) Integer of the value sent with this transaction
+- `data`: `DATA`  - The compiled code of a contract OR the hash of the invoked method signature and encoded parameters. For details see [Ethereum Contract ABI](<a href="https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI">https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI</a>)
+- `nonce`: `QUANTITY`  - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
+
+```js
+params: ["0xf8acf8a70b869184e72a00008276c094d46e8dd67c5d32be8058bb8eb970870f0724456794b60e8dd61c5d32be8058bb8eb970870f07233155849184e72aa9d46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f0724456751ba0a81f79d00e342f5df1c47acabfd0ccc77a3f9ab919a15d5a6699d6de2c4ffbdda07b721e0eb6a50e7bce582dbd71f690004eab409abe7b6cb57b04a240d814ee6dc0c0c0"]
+```
+
+##### Returns
+
+`DATA`, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.
+
 Use [eth_getTransactionReceipt](#eth_gettransactionreceipt) to get the contract address, after the transaction was mined, when you created a contract.
 
 ##### Example
@@ -705,7 +726,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{
 
 ***
 
-## [Subscribe](https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=2476:2561#L70)
+## [Subscribe](https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=2517:2602#L74)
 #### eth_subscribe
 
 Subscribe for events(newHeads/logs/newPendingTransactions) via WebSocket.
@@ -714,6 +735,10 @@ Subscribe for events(newHeads/logs/newPendingTransactions) via WebSocket.
 
 1. `Data` - subscription name `"newHeads"`, `"logs"` or `"newPendingTransactions"`（newHeads: new header is appended to the chain; logs: new logs are included in new blocks; newPendingTransactions: new transactions are added to the pending state and are signed with a key that is available in the node）.
 
+```js
+params: ["newHeads"]
+```
+
 ##### Returns
 
 subscription id
@@ -721,10 +746,12 @@ subscription id
 ##### Example
 ```js
 // Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":1}'
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_subscribe","params":[{see above}],"id":1}'
 
 // Result
 {
+
+
 	"id":1,
 	"jsonrpc": "2.0",
 	"result": "0x919d38fa5c395fa0f677e6554eef74fc7"
@@ -734,7 +761,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHea
 ***
 Subscribe for events via WebSocket.
 
-## [UnSubscribe](https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=6599:6672#L212)
+## [UnSubscribe](https://github.com/DSiSc/apigateway/tree/master/rpc/core/subscribe.go?s=6681:6754#L220)
 #### eth_unsubscribe
 
 Unsubscribe events via WebSocket.
@@ -743,6 +770,10 @@ Unsubscribe events via WebSocket.
 
 1. `Data` - subscription id
 
+```js
+params: ["0x919d38fa5c395fa0f677e6554eef74fc7"]
+```
+
 ##### Returns
 
 unsubscribe result
@@ -750,7 +781,7 @@ unsubscribe result
 ##### Example
 ```js
 // Request
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_unsubscribe","params":["0x919d38fa5c395fa0f677e6554eef74fc7"],"id":1}'
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_unsubscribe","params":[{see above}],"id":1}'
 
 // Result
 {
